@@ -8,10 +8,10 @@ circle_size = 10
 two_pi = 2 * math.pi
 # [Celestial Object, Semi-Minor Axis, Semi-Major Axis, Orbital Period (days), Color]
 celestials_info = [("Sun", 0.0, 0.0, 0.0, "yellow"),
-                   ("Mercury",   56.7,   57.9,    88.0,     "grey"),
-                   ("Venus",    108.2,  108.2,   224.6,   "orange"),
-                   ("Earth",    149.6,  149.6,   365.2,   "green"),
-                   ("Mars",     227.0,  228.0,   687.0,   "red"),
+                   ("Mercury",   56.7,   57.9,    88.0, "grey"),
+                   ("Venus",    108.2,  108.2,   224.6, "orange"),
+                   ("Earth",    149.6,  149.6,   365.2, "green"),
+                   ("Mars",     227.0,  228.0,   687.0, "red"),
                    ("Jupiter",  777.6,  778.5,  4331.0, "tan"),
                    ("Saturn",  1430.1, 1432.1, 10747.0, "brown"),
                    ("Uranus",  2863.9, 2867.1, 30589.0, "light blue"),
