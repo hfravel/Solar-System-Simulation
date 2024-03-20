@@ -16,27 +16,41 @@ light_gray = "#303030"
 major_axis_str = "Major Axis (10^6 km)"
 minor_axis_str = "Minor Axis (10^6 km)"
 
-fig, ax = plt.subplots()
-ax.set(axisbelow=True, facecolor="black")
 
-for i in range(8):
-    print(celestials_info[i][0])
-    ax.grid(color=light_gray, linestyle="-")
-    ax.set(title=celestials_info[i][0], xlabel=major_axis_str, ylabel=minor_axis_str)
+def create_orbit_png(planet, semi_minor_axis, semi_major_axis, focal_length, planet_color, radius_star):
+    figure, axes = plt.subplots()
+    axes.set(axisbelow=True, facecolor="black")
+    print(planet)
+    axes.grid(color=light_gray, linestyle="-")
+    axes.set(title=planet, xlabel=major_axis_str, ylabel=minor_axis_str)
 
     theta = np.linspace(0, 2 * pi, 100)
-    ax.plot(celestials_info[i][2] * np.cos(theta),
-            celestials_info[i][1] * np.sin(theta),
-            color=celestials_info[i][4],
-            linewidth=1)
+    axes.plot(semi_major_axis * np.cos(theta),
+              semi_minor_axis * np.sin(theta),
+              color=planet_color,
+              linewidth=1)
 
-    ax.plot(celestials_info[i][3], 0, color="gray", marker=".", markersize=2, zorder=1)
-    sun = plt.Circle((celestials_info[i][3], 0), radius_sun, color="yellow", linewidth=0, zorder=2)
-    ax.add_patch(sun)
-    ax.plot(-celestials_info[i][3], 0, color="gray", marker=".", markersize=2)
+    axes.plot(focal_length, 0, color="gray", marker=".", markersize=2, zorder=1)
+    sun = plt.Circle((focal_length, 0), radius_star, color="yellow", linewidth=0, zorder=2)
+    axes.add_patch(sun)
+    axes.plot(-focal_length, 0, color="gray", marker=".", markersize=2)
 
-    ax.axis("scaled")
-    fig.savefig(fname="../data/lowResOrbits/" + celestials_info[i][0] + "Ellipse.png", dpi=360)
-    fig.savefig(fname="../data/mediumResOrbits/" + celestials_info[i][0] + "Ellipse.png", dpi=720)
-    fig.savefig(fname="../data/highResOrbits/" + celestials_info[i][0] + "Ellipse.png", dpi=1440)
-    ax.cla()
+    axes.axis("scaled")
+    print("\tCreating Low Res... ", flush=True, end="")
+    figure.savefig(fname="../data/lowResOrbits/" + planet + "Ellipse.png", dpi=360)
+    print("Done")
+    print("\tCreating Medium Res... ", flush=True, end="")
+    figure.savefig(fname="../data/mediumResOrbits/" + planet + "Ellipse.png", dpi=720)
+    print("Done")
+    print("\tCreating High Res... ", flush=True, end="")
+    figure.savefig(fname="../data/highResOrbits/" + planet + "Ellipse.png", dpi=1440)
+    print("Done")
+
+
+for i in range(8):
+    create_orbit_png(celestials_info[i][0],
+                     celestials_info[i][1],
+                     celestials_info[i][2],
+                     celestials_info[i][3],
+                     celestials_info[i][4],
+                     radius_sun)

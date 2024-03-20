@@ -1,6 +1,6 @@
 # Solar System Simulation
-Simulation of our Solar System written in Python. This code has been adapted from my Astronomy Interface Project. 
-When I was recreating this simulation I realized that I made an error in the calculations. 
+Simulation of our Solar System written in Python. This code has been adapted from my Astronomy Interface Project.
+When I was recreating this simulation I realized that I made an error in the calculations.
 Below is a table of values I used for simulating our solar system.
 
 | Planet  | Perihelion (10^6 km) | Aphelion (10^6 km) | Orbital Period (days) |
@@ -59,4 +59,12 @@ We can reformat this equation to put b on the left: b = sqrt(a^2 * (1 - e^2)).
 Using these equations to calculate the semi-minor and semi-major axis, I fixed my simulation.
 
 These equations can be found in ellipseEquations.py with a few other formulas I programmed.
-I am currently working on diagrams that accurately show the two foci for each planet's orbit.
+
+## Planet's Elliptical Orbit Diagrams
+In ./data/highResOrbits, ./data/lowResOrbits, and ./data/mediumResOrbits I have an image for each planet's 
+elliptical orbit with gray dots as the two foci, and a yellow dot for the Sun placed at the right focus.
+I created the program ./src/planetOrbits.py, to create these orbits.
+The Sun's size on the diagram is proportional to the orbit's size.
+This is why I have also added a gray dot behind it, for when the Sun gets too small to see: Mars and beyond.
+This is also why I have added high resolution images of it, because information is lost with the lowest resolution.
+For example, the Sun on Neptune's diagram is about 1 pixel.
