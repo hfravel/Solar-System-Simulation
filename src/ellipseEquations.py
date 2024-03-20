@@ -48,4 +48,8 @@ def focal_length_eq1(semi_major_axis, semi_minor_axis):
 
 
 def focal_length_eq2(perihelion, aphelion):
-    return perihelion - aphelion
+    return (aphelion - perihelion) / 2
+
+
+def focal_length_eq3(eccentricity, semi_major_axis):
+    return eccentricity * semi_major_axis

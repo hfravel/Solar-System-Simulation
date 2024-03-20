@@ -6,7 +6,7 @@ main_font = ["Times New Roman", 24, "bold underline"]
 background_color = "black"
 circle_size = 10
 two_pi = 2 * math.pi
-# [Celestial Object, Semi-Minor Axis, Semi-Major Axis, Orbital Period (days), Color]
+# [Celestial Object, Semi-Minor Axis (10^6 km), Semi-Major Axis (10^6 km), Orbital Period (days), Color]
 celestials_info = [("Sun", 0.0, 0.0, 0.0, "yellow"),
                    ("Mercury",   56.7,   57.9,    88.0, "grey"),
                    ("Venus",    108.2,  108.2,   224.6, "orange"),
