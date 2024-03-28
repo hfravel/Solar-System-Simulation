@@ -4,14 +4,13 @@ import math
 simulation_name = "Solar System Simulation"
 main_font = ["Times New Roman", 24, "bold underline"]
 background_color = "black"
-circle_size = 10
+circle_size = 5
 two_pi = 2.0 * math.pi
 half_pi = math.pi / 2.0
-gravitational_constant = 0.000000000066743
-# convert from m^3 / (s^2kg) to 10^6km^3 / (0.365days^2 10^24kg)
-gravity_convert = 994519.296
+# Gravitational Constant converted from m^3 / (s^2kg) to 10^6km^3 / (0.365days^2 10^24kg)
+gravitational_constant = 0.000000000066743 * 994519.296
 # convert from km / s^2 to 10^6km / 0.365days^2
-speed = 994.519296
+acceleration_speed = 994.519296
 # convert from km / s to 10^6km / 0.365days
 base_velocity = 0.031536
 # [Celestial Object, Semi-Minor Axis (10^6 km), Semi-Major Axis (10^6 km), Orbital Period (days), Color]
@@ -143,7 +142,7 @@ def create_original_simulation(simulation):
     run_simulation()
 
 
-def calculate_2d_dist_orientation(diff_x, diff_y):
+def calculate_2d_orientation(diff_x, diff_y):
     if diff_x == 0.0:
         xy_theta = half_pi
     else:
@@ -152,49 +151,49 @@ def calculate_2d_dist_orientation(diff_x, diff_y):
     return distance, xy_theta
 
 
-def calculate_distance_and_orientation(xyz1, xyz2):
+def calculate_3d_orientation(xyz1, xyz2):
     diff_x = xyz2[0] - xyz1[0]
     sign_x = -1 if diff_x < 0.0 else 1
     diff_y = xyz2[1] - xyz1[1]
     sign_y = -1 if diff_y < 0.0 else 1
     diff_z = xyz2[2] - xyz1[2]
     sign_z = -1 if diff_z < 0.0 else 1
-    xz_hypotenuse, xz_theta = calculate_2d_dist_orientation(math.fabs(diff_x), math.fabs(diff_z))
-    distance, xyz_theta = calculate_2d_dist_orientation(xz_hypotenuse, math.fabs(diff_y))
+    xz_hypotenuse, xz_theta = calculate_2d_orientation(math.fabs(diff_x), math.fabs(diff_z))
+    distance, xyz_theta = calculate_2d_orientation(xz_hypotenuse, math.fabs(diff_y))
     return distance, xz_theta, xyz_theta, (sign_x, sign_y, sign_z)
 
 
-def calculate_3d_forces(force, xz_theta, xyz_theta):
-    y_force = force * math.sin(xyz_theta)
-    xz_force = force * math.cos(xyz_theta)
+def get_3d_vector_components(magnitude, xz_theta, xyz_theta):
+    y_force = magnitude * math.sin(xyz_theta)
+    xz_force = magnitude * math.cos(xyz_theta)
     x_force = xz_force * math.cos(xz_theta)
     z_force = xz_force * math.sin(xz_theta)
     return x_force, y_force, z_force
 
 
 def calculate_acceleration_due_to_gravity(mass2, distance):
-    return gravity_convert * gravitational_constant * mass2 / (distance * distance)
+    return gravitational_constant * mass2 / (distance * distance)
 
 
 def calculate_acceleration(main_index, all_masses, all_coord):
     length = len(all_masses)
     if length != len(all_coord):
         return "Fail"
-    x_force = 0.0
-    y_force = 0.0
-    z_force = 0.0
+    x_acc = 0.0
+    y_acc = 0.0
+    z_acc = 0.0
 
     for i in range(length):
         if i == main_index:
             continue
-        distance, xz_theta, xyz_theta, signs = calculate_distance_and_orientation(all_coord[main_index], all_coord[i])
+        distance, xz_theta, xyz_theta, signs = calculate_3d_orientation(all_coord[main_index], all_coord[i])
         gravity = calculate_acceleration_due_to_gravity(all_masses[i], distance)
-        temp_x, temp_y, temp_z = calculate_3d_forces(gravity, xz_theta, xyz_theta)
-        x_force += temp_x * signs[0]
-        y_force += temp_y * signs[1]
-        z_force += temp_z * signs[2]
+        temp_x, temp_y, temp_z = get_3d_vector_components(gravity, xz_theta, xyz_theta)
+        x_acc += temp_x * signs[0]
+        y_acc += temp_y * signs[1]
+        z_acc += temp_z * signs[2]
 
-    return x_force, y_force, z_force
+    return x_acc, y_acc, z_acc
 
 
 def create_physics_simulation(simulation):
@@ -254,17 +253,7 @@ def create_physics_simulation(simulation):
 
 
 if __name__ == "__main__":
-    # earth_mass = 5.97 # 10^24 kg
-    # earth_coord = planet_locations[3]
-    # other_masses = [1988500.0, 0.3302, 4.8685, 0.6417, 1898.1872, 568.34, 86.813, 102.409]
-    # other_coord = [(-1.1311, -0.5145, 0.0308),
-    #                (-2.6369, 45.5508, 3.9334),
-    #                (71.6401, -81.4081, -5.2791),
-    #                (118.9463, -171.7443, -6.5030),
-    #                (453.0145, 593.9629, -12.5993),
-    #                (1364.7719, -495.0326, 45.7307),
-    #                (1797.6897, 2315.0823, -14.6911),
-    #                (4465.0814, -231.0891, -98.1433)]
-    # x,y,z = calculate_acceleration(3, planet_masses, planet_locations)
-    # print("x: " + str(x) + ", y: " + str(y) + ", z: " + str(z))
     create_simulation_window(True)
+    # print(str(gravitational_constant * 10 / 5**2  * math.cos(0.92729) +
+    #           gravitational_constant * 20 / 10**2 * math.cos(0.6435)))
+    # print(str(gravitational_constant * 30 / 68.55555 * math.cos(0.6998)))
