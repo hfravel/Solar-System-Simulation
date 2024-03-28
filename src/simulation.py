@@ -5,8 +5,8 @@ simulation_name = "Solar System Simulation"
 main_font = ["Times New Roman", 24, "bold underline"]
 background_color = "black"
 circle_size = 10
-two_pi = 2 * math.pi
-half_pi = math.pi / 2
+two_pi = 2.0 * math.pi
+half_pi = math.pi / 2.0
 gravitational_constant = 0.000000000066743
 # convert from m^3 / (s^2kg) to 10^6km^3 / (0.365days^2 10^24kg)
 gravity_convert = 994519.296
@@ -16,13 +16,13 @@ speed = 994.519296
 base_velocity = 0.031536
 # [Celestial Object, Semi-Minor Axis (10^6 km), Semi-Major Axis (10^6 km), Orbital Period (days), Color]
 celestials_info = [("Sun", 0.0, 0.0, 0.0, "yellow"),
-                   ("Mercury",   56.7,   57.9,    88.0, "grey"),
-                   ("Venus",    108.2,  108.2,   224.6, "orange"),
-                   ("Earth",    149.6,  149.6,   365.2, "green"),
-                   ("Mars",     227.0,  228.0,   687.0, "red"),
-                   ("Jupiter",  777.6,  778.5,  4331.0, "tan"),
-                   ("Saturn",  1430.1, 1432.1, 10747.0, "brown"),
-                   ("Uranus",  2863.9, 2867.1, 30589.0, "light blue"),
+                   ("Mercury", 56.7, 57.9, 88.0, "grey"),
+                   ("Venus", 108.2, 108.2, 224.6, "orange"),
+                   ("Earth", 149.6, 149.6, 365.2, "green"),
+                   ("Mars", 227.0, 228.0, 687.0, "red"),
+                   ("Jupiter", 777.6, 778.5, 4331.0, "tan"),
+                   ("Saturn", 1430.1, 1432.1, 10747.0, "brown"),
+                   ("Uranus", 2863.9, 2867.1, 30589.0, "light blue"),
                    ("Neptune", 4514.8, 4515.0, 59800.0, "blue")]
 # Go on Horizons Web Application with the following settings:
 # Ephemeris Type = "Vector Table", Coordinate Center = "Solar System Barycenter (SSB),
@@ -144,24 +144,21 @@ def create_original_simulation(simulation):
 
 
 def calculate_2d_dist_orientation(diff_x, diff_y):
-    if diff_x == 0:
-        if diff_y < 0:
-            xy_theta = -half_pi
-        else:
-            xy_theta = half_pi
+    if diff_x == 0.0:
+        xy_theta = half_pi
     else:
         xy_theta = math.atan(diff_y / diff_x)
-    distance = diff_x if diff_y == 0 else diff_y / math.sin(xy_theta)
+    distance = diff_x if diff_y == 0.0 else diff_y / math.sin(xy_theta)
     return distance, xy_theta
 
 
 def calculate_distance_and_orientation(xyz1, xyz2):
     diff_x = xyz2[0] - xyz1[0]
-    sign_x = -1 if diff_x < 0 else 1
+    sign_x = -1 if diff_x < 0.0 else 1
     diff_y = xyz2[1] - xyz1[1]
-    sign_y = -1 if diff_y < 0 else 1
+    sign_y = -1 if diff_y < 0.0 else 1
     diff_z = xyz2[2] - xyz1[2]
-    sign_z = -1 if diff_z < 0 else 1
+    sign_z = -1 if diff_z < 0.0 else 1
     xz_hypotenuse, xz_theta = calculate_2d_dist_orientation(math.fabs(diff_x), math.fabs(diff_z))
     distance, xyz_theta = calculate_2d_dist_orientation(xz_hypotenuse, math.fabs(diff_y))
     return distance, xz_theta, xyz_theta, (sign_x, sign_y, sign_z)
@@ -176,7 +173,7 @@ def calculate_3d_forces(force, xz_theta, xyz_theta):
 
 
 def calculate_acceleration_due_to_gravity(mass2, distance):
-    return gravity_convert * gravitational_constant * mass2 / (distance*distance)
+    return gravity_convert * gravitational_constant * mass2 / (distance * distance)
 
 
 def calculate_acceleration(main_index, all_masses, all_coord):
@@ -240,15 +237,15 @@ def create_physics_simulation(simulation):
 
     def run_simulation():
         try:
-            update_planets()
             for j in range(9):
                 temp_ax, temp_ay, temp_az = calculate_acceleration(j, planet_masses, celestials_curr_position)
                 celestials_curr_velocity[j][0] += temp_ax
-                celestials_curr_velocity[j][0] += temp_ay
-                celestials_curr_velocity[j][0] += temp_az
+                celestials_curr_velocity[j][1] += temp_ay
+                celestials_curr_velocity[j][2] += temp_az
                 celestials_curr_position[j][0] += celestials_curr_velocity[j][0]
                 celestials_curr_position[j][1] += celestials_curr_velocity[j][1]
                 celestials_curr_position[j][2] += celestials_curr_velocity[j][2]
+            update_planets()
             simulation.after(10, run_simulation)
         except Exception as e:
             print(e)
