@@ -8,8 +8,12 @@ circle_size = 10
 two_pi = 2 * math.pi
 half_pi = math.pi / 2
 gravitational_constant = 0.000000000066743
-gravity_convert = 9.94519296E11
+# convert from m^3 / (s^2kg) to 10^6km^3 / (0.365days^2 10^24kg)
+gravity_convert = 994519.296
+# convert from km / s^2 to 10^6km / 0.365days^2
 speed = 994.519296
+# convert from km / s to 10^6km / 0.365days
+base_velocity = 0.031536
 # [Celestial Object, Semi-Minor Axis (10^6 km), Semi-Major Axis (10^6 km), Orbital Period (days), Color]
 celestials_info = [("Sun", 0.0, 0.0, 0.0, "yellow"),
                    ("Mercury",   56.7,   57.9,    88.0, "grey"),
@@ -153,15 +157,14 @@ def calculate_2d_dist_orientation(diff_x, diff_y):
 
 def calculate_distance_and_orientation(xyz1, xyz2):
     diff_x = xyz2[0] - xyz1[0]
+    sign_x = -1 if diff_x < 0 else 1
     diff_y = xyz2[1] - xyz1[1]
+    sign_y = -1 if diff_y < 0 else 1
     diff_z = xyz2[2] - xyz1[2]
-    xz_hypotenuse, xz_theta = calculate_2d_dist_orientation(diff_x, diff_z)
-    # xz_theta = math.pi / 2 if diff_x == 0 else math.atan(diff_z / diff_x)
-    # xz_hypotenuse = diff_x if diff_z == 0 else diff_z / math.sin(xz_theta)
-    # xyz_theta = math.pi / 2 if xz_hypotenuse == 0 else math.atan(diff_y / xz_hypotenuse)
-    # distance = xz_hypotenuse if diff_y == 0 else diff_y / math.sin(xyz_theta)
-    distance, xyz_theta = calculate_2d_dist_orientation(xz_hypotenuse, diff_y)
-    return distance, xz_theta, xyz_theta
+    sign_z = -1 if diff_z < 0 else 1
+    xz_hypotenuse, xz_theta = calculate_2d_dist_orientation(math.fabs(diff_x), math.fabs(diff_z))
+    distance, xyz_theta = calculate_2d_dist_orientation(xz_hypotenuse, math.fabs(diff_y))
+    return distance, xz_theta, xyz_theta, (sign_x, sign_y, sign_z)
 
 
 def calculate_3d_forces(force, xz_theta, xyz_theta):
@@ -187,12 +190,12 @@ def calculate_acceleration(main_index, all_masses, all_coord):
     for i in range(length):
         if i == main_index:
             continue
-        distance, xz_theta, xyz_theta = calculate_distance_and_orientation(all_coord[main_index], all_coord[i])
+        distance, xz_theta, xyz_theta, signs = calculate_distance_and_orientation(all_coord[main_index], all_coord[i])
         gravity = calculate_acceleration_due_to_gravity(all_masses[i], distance)
-        temp_x, temp_y, temp_z = calculate_3d_forces(-gravity, xz_theta, xyz_theta)
-        x_force += temp_x
-        y_force += temp_y
-        z_force += temp_z
+        temp_x, temp_y, temp_z = calculate_3d_forces(gravity, xz_theta, xyz_theta)
+        x_force += temp_x * signs[0]
+        y_force += temp_y * signs[1]
+        z_force += temp_z * signs[2]
 
     return x_force, y_force, z_force
 
@@ -206,7 +209,6 @@ def create_physics_simulation(simulation):
 
     celestials_curr_position = [planet_locations[i] for i in range(9)]
     celestials_curr_velocity = [planet_velocities[i] for i in range(9)]
-    base_velocity = 0.031536
     for i in range(9):
         celestials_curr_velocity[i][0] *= base_velocity
         celestials_curr_velocity[i][1] *= base_velocity
@@ -237,14 +239,13 @@ def create_physics_simulation(simulation):
             simulation_canvas.move(celestials_info[j][0], new_pos[0] - old_pos[0], new_pos[1] - old_pos[1])
 
     def run_simulation():
-        const = 0.001
         try:
             update_planets()
             for j in range(9):
                 temp_ax, temp_ay, temp_az = calculate_acceleration(j, planet_masses, celestials_curr_position)
-                celestials_curr_velocity[j][0] += temp_ax * const
-                celestials_curr_velocity[j][0] += temp_ay * const
-                celestials_curr_velocity[j][0] += temp_az * const
+                celestials_curr_velocity[j][0] += temp_ax
+                celestials_curr_velocity[j][0] += temp_ay
+                celestials_curr_velocity[j][0] += temp_az
                 celestials_curr_position[j][0] += celestials_curr_velocity[j][0]
                 celestials_curr_position[j][1] += celestials_curr_velocity[j][1]
                 celestials_curr_position[j][2] += celestials_curr_velocity[j][2]
