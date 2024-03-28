@@ -68,3 +68,7 @@ The Sun's size on the diagram is proportional to the orbit's size.
 This is why I have also added a gray dot behind it, for when the Sun gets too small to see: Mars and beyond.
 This is also why I have added high resolution images of it, because information is lost with the lowest resolution.
 For example, the Sun on Neptune's diagram is about 1 pixel.
+
+## Physics Accurate Simulation
+In ./src/simulation.py, I created a second function, create_physics_simulation, that uses the gravitation force equation.
+
