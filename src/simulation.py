@@ -1,10 +1,11 @@
 import tkinter as tk
 import math
+from PIL import Image, ImageTk
 
 simulation_name = "Solar System Simulation"
 main_font = ["Times New Roman", 24, "bold underline"]
 background_color = "black"
-circle_size = 5
+circle_size = 10
 two_pi = 2.0 * math.pi
 half_pi = math.pi / 2.0
 # Gravitational Constant converted from m^3 / (s^2kg) to 10^6km^3 / (0.365days^2 10^24kg)
@@ -70,13 +71,26 @@ planet_masses = [1988500.0, 0.3302, 4.8685, 5.97219, 0.6417, 1898.1872, 568.34, 
 
 def create_simulation_window(physics_accurate):
     simulation_root = tk.Tk(className=simulation_name)
-    simulation_root.geometry("500x500")
+    simulation_root.geometry()
     create_title(simulation_root)
     if physics_accurate:
+        # show_image(simulation_root)
         create_physics_simulation(simulation_root)
     else:
         create_original_simulation(simulation_root)
     simulation_root.mainloop()
+
+
+def show_image(simulation):
+    simulation_frame = tk.Frame(simulation, height=1)
+    simulation_frame.pack(fill=tk.BOTH, expand=True)
+
+    simulation_canvas = tk.Canvas(simulation_frame, bg=background_color, width=840, height=859)
+    simulation_canvas.pack(in_=simulation_frame, fill=tk.BOTH, expand=True)
+
+    # img = tk.PhotoImage(file='.\\..\\data\\planetImages\\github.png')
+    img = tk.PhotoImage(file=r'.\..\data\planetImages\sun.png')
+    simulation_canvas.create_image(0, 0, anchor=tk.NW, image=img)
 
 
 def create_title(simulation):
